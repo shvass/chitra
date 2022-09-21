@@ -1,0 +1,7 @@
+# binary directories
+/build
+/out
+
+# editors / IDES config files
+.vscode/
+.vs/
