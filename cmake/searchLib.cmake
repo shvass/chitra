@@ -31,18 +31,21 @@ function(searchLib name)
     
     # whether pkgConfig found the library
     if(${${name}_FOUND})
-        # add a interface library named ${name}
-        add_library(${name} INTERFACE)
-        target_link_libraries(${name} INTERFACE ${${name}_LIBRARIES})
-        target_include_directories(${name} INTERFACE ${${name}_INCLUDE_DIRS})
-        target_link_directories(${name} INTERFACE ${${name}_LIBRARY_DIRS})
-        set(${name} ${name} PARENT_SCOPE)    # export to parent scope
+        # add a interface library named i-${name}
+        add_library(i-${name} INTERFACE)
+        target_link_libraries(i-${name} INTERFACE ${${name}_LIBRARIES})
+        target_include_directories(i-${name} INTERFACE ${${name}_INCLUDE_DIRS})
+        target_link_directories(i-${name} INTERFACE ${${name}_LIBRARY_DIRS})
+        set(i-${name} ${name} PARENT_SCOPE)    # export to parent scope
+
+        set(libraries ${libraries} i-${name} PARENT_SCOPE)
 
     else() 
+    
         # include library specific cmake file to build from source
         include(cmake/${name}.cmake)
+        set(libraries ${libraries} ${name} PARENT_SCOPE)
     endif()
 
-    set(libraries ${libraries} ${name} PARENT_SCOPE)
 endfunction(searchLib name)
 
