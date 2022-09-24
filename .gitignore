@@ -1,6 +1,6 @@
 # binary directories
-/build
-/out
+build/
+out/
 
 # editors / IDES config files
 .vscode/

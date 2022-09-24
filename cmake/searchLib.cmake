@@ -41,7 +41,8 @@ function(searchLib name)
         set(libraries ${libraries} i-${name} PARENT_SCOPE)
 
     else() 
-    
+
+        message(STATUS "building ${name} from source")
         # include library specific cmake file to build from source
         include(cmake/${name}.cmake)
         set(libraries ${libraries} ${name} PARENT_SCOPE)

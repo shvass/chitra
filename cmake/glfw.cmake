@@ -15,32 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+# build config file for glfw dependency
 
-cmake_minimum_required(VERSION 3.0)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "disable GLFW example programs build")
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "disable GLFW test build")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "disable GLFW docs build")
+set(GLFW_INSTALL OFF CACHE BOOL "disable GLFW install script build")
 
-project(chitra LANGUAGES C CXX)
-
-OPTION(USE_SYSTEM_LIBS "use system libraries rather than building from source" ON)
-
-set(CMAKE_CXX_STANDARD 17)
-
-
-file(GLOB chitra_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp)
-
-# additional sources
-list(APPEND chitra_sources
-
-)
-
-# additional libraries
-list(APPEND libraries
-
-)
-
-
-# include the searchLib function
-include(cmake/searchLib.cmake)
-searchLib(glfw glfw3)
-
-add_executable(chitra ${chitra_sources})
-target_link_libraries(chitra ${libraries})
+add_subdirectory(deps/glfw)
