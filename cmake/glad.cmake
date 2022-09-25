@@ -16,32 +16,4 @@
 
 
 
-cmake_minimum_required(VERSION 3.0)
-
-project(chitra LANGUAGES C CXX)
-
-OPTION(USE_SYSTEM_LIBS "use system libraries rather than building from source" ON)
-
-set(CMAKE_CXX_STANDARD 17)
-
-
-file(GLOB chitra_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp)
-
-# additional sources
-list(APPEND chitra_sources
-
-)
-
-# additional libraries
-list(APPEND libraries
-
-)
-
-
-# include the searchLib function
-include(cmake/searchLib.cmake)
-searchLib(glfw glfw3)
-searchLib(glad glad)
-
-add_executable(chitra ${chitra_sources})
-target_link_libraries(chitra ${libraries})
+add_subdirectory(deps/glad)

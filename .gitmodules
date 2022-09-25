@@ -2,3 +2,6 @@
 	path = deps/glfw
 	url = https://github.com/glfw/glfw.git
 	branch = 3.3-stable
+[submodule "deps/glad"]
+	path = deps/glad
+	url = https://github.com/Dav1dde/glad.git
