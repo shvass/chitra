@@ -32,3 +32,4 @@ endif()
 
 add_library(imgui ${imgui_sources})
 target_include_directories(imgui PUBLIC ${imgui_path} ${imgui_path}/backends)
+target_link_libraries(imgui PRIVATE glfw)
