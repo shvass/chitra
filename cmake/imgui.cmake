@@ -22,8 +22,13 @@ file(GLOB imgui_sources ${imgui_path}/*.cpp)
 list(APPEND imgui_sources
     ${imgui_path}/backends/imgui_impl_glfw.cpp
     ${imgui_path}/backends/imgui_impl_opengl3.cpp
-    ${imgui_path}/backends/imgui_impl_win32.cpp
 )
 
+if(WIN32)
+list(APPEND imgui_sources
+    ${imgui_path}/backends/imgui_impl_win32.cpp
+)
+endif()
+
 add_library(imgui ${imgui_sources})
-target_include_directories(imgui PUBLIC ${imgui_path})
+target_include_directories(imgui PUBLIC ${imgui_path} ${imgui_path}/backends)
