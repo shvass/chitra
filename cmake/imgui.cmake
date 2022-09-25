@@ -14,35 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+set(imgui_path "deps/imgui")
 
+file(GLOB imgui_sources ${imgui_path}/*.cpp)
 
-cmake_minimum_required(VERSION 3.0)
-
-project(chitra LANGUAGES C CXX)
-
-OPTION(USE_SYSTEM_LIBS "use system libraries rather than building from source" ON)
-
-set(CMAKE_CXX_STANDARD 17)
-
-
-file(GLOB chitra_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp)
-
-# additional sources
-list(APPEND chitra_sources
-
+# imgui backends
+list(APPEND imgui_sources
+    ${imgui_path}/backends/imgui_impl_glfw.cpp
+    ${imgui_path}/backends/imgui_impl_opengl3.cpp
+    ${imgui_path}/backends/imgui_impl_win32.cpp
 )
 
-# additional libraries
-list(APPEND libraries
-
-)
-
-
-# include the searchLib function
-include(cmake/searchLib.cmake)
-searchLib(glfw glfw3)
-searchLib(glad glad)
-searchLib(imgui imgui)
-
-add_executable(chitra ${chitra_sources})
-target_link_libraries(chitra ${libraries})
+add_library(imgui ${imgui_sources})
+target_include_directories(imgui PUBLIC ${imgui_path})
