@@ -28,13 +28,22 @@ public:
     // holds functions to handler various input events 
     struct inputHandler
     {
+        window* display=0;
         // mouse position and delta values
-        double posX, posY, dposX, dposY;
+        double posX, posY, dposX, dposY,
+        // scroll positions
+        scrollX, scrollY, dScrollX, dScrollY;
+        // window width and height
+        int height=0, width=0;
 
-
+        virtual void close() {};
+        virtual void resized() {};
         virtual void cursorUpdate() {};
-        virtual ~inputHandler() {};
-    };
+        virtual void scrollUpdate() {};
+        virtual void dropInput(const char* str) {};
+        virtual void keyStateUpdate(int keyCode, bool down) {};
+        virtual void mouseButtonUpdate(int keyCode, bool down) {};
+    } defaultInputHandler;
 
     // initial configuration of window
     struct windowConfig
@@ -56,16 +65,22 @@ public:
 
     ~window();
 
-    
+
 private:
     GLFWwindow* m_win=0;
     // m_handler must never be null
-    inputHandler* m_handler= new inputHandler;
+    inputHandler* m_handler= &defaultInputHandler;
     int m_height=0, m_width=0;
 
     // static callbacks to window inputs
     // later inputs passed to m_handler
-    static void glfwCursorPos(GLFWwindow*, double, double);
-};
+    static void glfwWindowCloseCallback(GLFWwindow*);
+    static void glfwCursorPosCallback(GLFWwindow*, double, double);
+    static void glfwResizeCallback(GLFWwindow* window, int width, int height);
+    static void glfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    static void glfwDropCallback(GLFWwindow* window, int path_count, const char* paths[]);
+    static void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+    static void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+};  
 
 #endif //WINDOW_HPP
