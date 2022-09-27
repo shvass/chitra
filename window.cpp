@@ -58,6 +58,7 @@ window::window(windowConfig& cfg){
     glfwSetCursorPosCallback(m_win, glfwCursorPosCallback);
     glfwSetWindowCloseCallback(m_win, glfwWindowCloseCallback);
     glfwSetMouseButtonCallback(m_win, glfwMouseButtonCallback);
+    glfwSetScrollCallback(m_win, glfwScrollCallback);
 
     glfwMakeContextCurrent(prevCtx);
 };
@@ -127,13 +128,13 @@ void window::glfwDropCallback(GLFWwindow* win, int path_count, const char* paths
     };
 };
 
-void window::glfwScrollCallback(GLFWwindow* win, double x, double y){
+void window::glfwScrollCallback(GLFWwindow* win, double dx, double dy){
     inputHandler& handler = *(inputHandler*) glfwGetWindowUserPointer(win);
 
-    handler.dScrollX = x - handler.scrollX;
-    handler.dScrollY = y - handler.scrollY;
-    handler.scrollX = x;
-    handler.scrollY = y;
+    handler.dScrollX = dx;
+    handler.dScrollY = dy;
+    handler.scrollX += dx;
+    handler.scrollY += dy;
 
-    handler.cursorUpdate();
+    handler.scrollUpdate();
 };
