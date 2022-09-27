@@ -36,6 +36,13 @@ public:
         // window width and height
         int height=0, width=0;
 
+        // processes all events on hold by calling virtual methods below
+        // must be called frequently to avoid window from stalling
+        void processEvents();
+
+        // swap window buffer
+        void swapBuffer();
+
         virtual void close() {};
         virtual void resized() {};
         virtual void cursorUpdate() {};
@@ -52,7 +59,7 @@ public:
         unsigned int monitorIndex=0;
         const char* title = "window";
 
-        bool setFullscreen=false;
+        bool setFullscreen=false, resizable=false;
         inputHandler* handler=0;
     };
 
@@ -63,6 +70,12 @@ public:
     // the previous handler is returned 
     inputHandler* switchHandler(inputHandler* handler);
 
+    // make this window as rendering context for current thread
+    // must be called before parsing draw calls
+    void setActive();
+
+    void resize(int width, int height);
+    
     ~window();
 
 

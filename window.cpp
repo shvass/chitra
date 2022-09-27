@@ -34,6 +34,10 @@ window::window(windowConfig& cfg){
     if(!cfg.height || !cfg.width)
         glfwGetMonitorWorkarea(targetMon, NULL, NULL, &cfg.width, &cfg.height);
 
+    // window creation hints
+    glfwWindowHint(GLFW_RESIZABLE, cfg.resizable);
+
+
     // create window
     m_win = glfwCreateWindow(
         m_width = cfg.width, 
@@ -73,11 +77,23 @@ window::inputHandler* window::switchHandler(inputHandler* handler){
     return prev;
 };
 
+void window::setActive(){
+    glfwMakeContextCurrent(m_win);
+}
 
 window::~window(){
     glfwDestroyWindow(m_win);
 };
 
+
+// window::inputHandler methods
+void window::inputHandler::processEvents(){
+    glfwPollEvents();
+};
+
+void window::inputHandler::swapBuffer(){
+    glfwSwapBuffers(display->m_win);
+};
 
 
 // static window callbacks
