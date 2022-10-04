@@ -24,12 +24,12 @@ list(APPEND imgui_sources
     ${imgui_path}/backends/imgui_impl_opengl3.cpp
 )
 
-if(WIN32)
-list(APPEND imgui_sources
-    ${imgui_path}/backends/imgui_impl_win32.cpp
-)
-endif()
 
 add_library(imgui ${imgui_sources})
 target_include_directories(imgui PUBLIC ${imgui_path} ${imgui_path}/backends)
 target_link_libraries(imgui PRIVATE glfw)
+set_target_properties(imgui PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/deps/imgui"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/deps/imgui"
+    BINARY_DIR "${CMAKE_BINARY_DIR}/deps/imgui"
+)
