@@ -18,8 +18,16 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
-bool isGladInited = false,  isGlfwInited = false;
+#define glsl_version "#version 330 core"
+
+// definition of static members
+window::inputHandler window::defaultInputHandler;
+window::windowConfig window::defaultWindowConfig;
+bool isGladInited = false,  isGlfwInited = false, isImguiInited=false;
 
 window::window(windowConfig& cfg){
 
@@ -47,13 +55,6 @@ window::window(windowConfig& cfg){
         NULL
     );
     
-    // switch context
-    GLFWwindow* prevCtx = glfwGetCurrentContext();
-    glfwMakeContextCurrent(m_win);
-
-    // initialize glad
-    if(!isGladInited) isGladInited = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-
     // setup input callbacks
     switchHandler(cfg.handler);
     glfwSetKeyCallback(m_win, glfwKeyCallback);
@@ -64,12 +65,29 @@ window::window(windowConfig& cfg){
     glfwSetMouseButtonCallback(m_win, glfwMouseButtonCallback);
     glfwSetScrollCallback(m_win, glfwScrollCallback);
 
+    // switch context
+    GLFWwindow* prevCtx = glfwGetCurrentContext();
+    glfwMakeContextCurrent(m_win);
+
+    // initialize imgui
+    if(!isImguiInited){
+        isImguiInited=true;
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+    };
+    ImGui_ImplGlfw_InitForOpenGL(m_win, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    // initialize glad
+    if(!isGladInited) isGladInited = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
     glfwMakeContextCurrent(prevCtx);
 };
 
 
 window::inputHandler* window::switchHandler(inputHandler* handler){
 
+    if(!handler) return nullptr;
     handler->display = this;
     inputHandler* prev = m_handler;
     m_handler = handler;
