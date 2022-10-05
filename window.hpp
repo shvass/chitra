@@ -19,7 +19,7 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
-class GLFWwindow;
+struct GLFWwindow;
 
 class window
 {
