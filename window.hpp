@@ -52,7 +52,6 @@ public:
         virtual void mouseButtonUpdate(int keyCode, bool down) {};
     } static defaultInputHandler;
 
-
     // initial configuration of window
     struct windowConfig
     {
@@ -63,7 +62,6 @@ public:
         bool setFullscreen=false, resizable=true;
         inputHandler* handler=0;
     } static defaultWindowConfig;
-
 
 
     window(windowConfig& cfg = defaultWindowConfig);

@@ -81,8 +81,6 @@ window::window(windowConfig& cfg){
     // initialize glad
     if(!isGladInited) isGladInited = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-    glfwMakeContextCurrent(prevCtx);
-};
 
 
 window::inputHandler* window::switchHandler(inputHandler* handler){
