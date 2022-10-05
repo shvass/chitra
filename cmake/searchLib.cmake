@@ -26,11 +26,14 @@ function(searchLib name)
 
     # try -find via package config
     if(PkgConfig_FOUND)
-        pkg_check_modules(${name} ${ARGN})
+        pkg_check_modules(${name} QUIET ${ARGN})
+        message(CHECK_START "searching ${name} on system")
     endif()
-    
+
     # whether pkgConfig found the library
     if(${${name}_FOUND})
+        message(CHECK_PASS "found")
+
         # add a interface library named i-${name}
         add_library(i-${name} INTERFACE)
         target_link_libraries(i-${name} INTERFACE ${${name}_LIBRARIES})
@@ -39,12 +42,12 @@ function(searchLib name)
         set(i-${name} ${name} PARENT_SCOPE)    # export to parent scope
 
         set(libraries ${libraries} i-${name} PARENT_SCOPE)
-
     else() 
 
-        message(STATUS "building ${name} from source")
+        message(CHECK_FAIL " Not Found - building from source")
         # include library specific cmake file to build from source
         include(cmake/${name}.cmake)
+        
         set(libraries ${libraries} ${name} PARENT_SCOPE)
     endif()
 

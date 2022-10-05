@@ -19,7 +19,7 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
-class GLFWwindow;
+struct GLFWwindow;
 
 class window
 {
@@ -50,7 +50,7 @@ public:
         virtual void dropInput(const char* str) {};
         virtual void keyStateUpdate(int keyCode, bool down) {};
         virtual void mouseButtonUpdate(int keyCode, bool down) {};
-    } defaultInputHandler;
+    } static defaultInputHandler;
 
     // initial configuration of window
     struct windowConfig
@@ -59,12 +59,12 @@ public:
         unsigned int monitorIndex=0;
         const char* title = "window";
 
-        bool setFullscreen=false, resizable=false;
+        bool setFullscreen=false, resizable=true;
         inputHandler* handler=0;
-    };
+    } static defaultWindowConfig;
 
 
-    window(windowConfig&);
+    window(windowConfig& cfg = defaultWindowConfig);
 
     // switch current inputHandler with new one
     // the previous handler is returned 
@@ -73,6 +73,8 @@ public:
     // make this window as rendering context for current thread
     // must be called before parsing draw calls
     void setActive();
+
+    GLFWwindow* getGlfwContext() const { return m_win;}
 
     void resize(int width, int height);
     

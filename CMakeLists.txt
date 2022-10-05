@@ -26,6 +26,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 file(GLOB chitra_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp)
+# exclude tests directory from chitra source
+list(FILTER chitra_sources EXCLUDE REGEX "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 
 # additional sources
 list(APPEND chitra_sources
@@ -40,9 +42,14 @@ list(APPEND libraries
 
 # include the searchLib function
 include(cmake/searchLib.cmake)
+searchLib(ffmpeg libavcodec libavformat libavutil)
 searchLib(glfw glfw3)
 searchLib(glad glad)
 searchLib(imgui imgui)
 
+# setup testing
+include(cmake/tests.cmake)
+
+# add chitra executable
 add_executable(chitra ${chitra_sources})
 target_link_libraries(chitra ${libraries})
