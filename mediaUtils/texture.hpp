@@ -32,8 +32,8 @@ struct texture
 
     ~texture();
 
-    unsigned int texId, width, height, fmt;
-    unsigned char** data;
+    unsigned int texId=0, width=0, height=0, fmt=0;
+    unsigned char** data=0;
 private:
     unsigned int currentHeight, currentWidth, currentFmt;
 };

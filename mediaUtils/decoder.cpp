@@ -50,6 +50,9 @@ void decoder::decode(int count){
         if(!source->size()) source->pull(count);
         pkt = source->front();
         source->pop();
+        
+        // end of stream or error
+        if(!pkt) { frames.push(nullptr); return; }
 
         avcodec_send_packet(Ctx, pkt);
         loader::returnPacket(pkt);

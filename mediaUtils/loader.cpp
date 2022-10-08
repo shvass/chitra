@@ -37,21 +37,23 @@ loader::loader(const char* path){
     // fillup streams buffer
     streams.reserve(fmtCtx->nb_streams);
     for(int i=0; i < fmtCtx->nb_streams; i++) streams.push_back(packetStream(*this, i, fmtCtx->streams[i]->codecpar));
-
 };
 
 
 
 void loader::load(int streamIndex, int count){
-    if(avErr) return;
-
     AVPacket* pkt;
     while (count)
     {
         pkt = getPacket();
-        av_read_frame(fmtCtx, pkt);
-        if(pkt->stream_index == streamIndex) count--;
+        if(avErr = av_read_frame(fmtCtx, pkt)){
+            av_strerror(avErr, errBuffer, 100);
+            streams[streamIndex].push(nullptr);
+            returnPacket(pkt);
+            return;
+        };
 
+        if(pkt->stream_index == streamIndex) count--;
         streams[pkt->stream_index].push(pkt);
     }
 };
@@ -75,6 +77,20 @@ loader::~loader(){
     clear();
     avformat_close_input(&fmtCtx);
 };
+
+
+packetStream* loader::getDefaultVideoStream(){
+    int index = av_find_best_stream(fmtCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
+    if(index < 0) return nullptr;
+    return &streams[index];
+}
+
+
+packetStream* loader::getDefaultAudioStream(){
+    int index = av_find_best_stream(fmtCtx, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
+    if(index < 0) return nullptr;
+    return &streams[index];
+}
 
 
 AVPacket* loader::getPacket(){

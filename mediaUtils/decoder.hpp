@@ -30,6 +30,13 @@ class decoder
 public:
     decoder(packetStream* stream);
 
+    // error reporting
+    // return true if error else false
+    bool err() { return avErr; }
+
+    // return error string with null termination
+    const char* getErrStr() { return errStr; }
+
     void decode(int count=1);
 
     AVFrame* getFrame();

@@ -38,18 +38,31 @@ public:
     loader(const char* path);
 
 
+    // returns audio/video stream 
+    //         null if no stream found
+    packetStream* getDefaultVideoStream();
+    packetStream* getDefaultAudioStream();
+
+    packetStream& getStream(unsigned int index=0) {return streams[index];};
+
+
+    // error reporting
+    // return true if error else false
+    bool err() { return avErr; }
+    // return error string with null termination
+    const char* getErrStr() { return errBuffer; }
+
+
     // load 'count' no of packets of particular stream
     // other stream packets found also will be loaded
     void load(int streamIndex = -1, int count=1);
 
-    // clear all loaded packets in the stream
+    // clear all loaded packets in all the stream
     void clear();
 
     // seek to a particular timeStamp 
     // 0 = beginning
     void seek(double time=0);
-
-    packetStream& getStream(unsigned int index=0) {return streams[index];};
 
     ~loader();
 

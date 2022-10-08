@@ -48,8 +48,8 @@ window::window(windowConfig& cfg){
 
     // create window
     m_win = glfwCreateWindow(
-        m_width = cfg.width, 
-        m_height = cfg.height, 
+        m_width = cfg.width,
+        m_height = cfg.height,
         cfg.title, 
         (cfg.setFullscreen) ? targetMon : NULL,
         NULL
@@ -80,7 +80,7 @@ window::window(windowConfig& cfg){
 
     // initialize glad
     if(!isGladInited) isGladInited = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-
+}
 
 
 window::inputHandler* window::switchHandler(inputHandler* handler){
