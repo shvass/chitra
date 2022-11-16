@@ -5,7 +5,7 @@
 ## How to build ?
 
 ```
-git clone https://github.com/akshayBnsod/chitra && cd chitra
+git clone https://github.com/akbnsd/chitra && cd chitra
 ```
 ```
 mkdir build && cd build
