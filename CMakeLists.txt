@@ -17,12 +17,12 @@
 
 
 cmake_minimum_required(VERSION 3.0)
+set(CMAKE_CXX_STANDARD 17)
 
 project(chitra LANGUAGES C CXX)
 
 OPTION(USE_SYSTEM_LIBS "use system libraries rather than building from source" ON)
-
-set(CMAKE_CXX_STANDARD 17)
+OPTION(BUILD_DOCS "Generate Doxygen (html) documentation" ON)
 
 
 file(GLOB chitra_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp)
@@ -47,8 +47,9 @@ searchLib(glfw glfw3)
 searchLib(glad glad)
 searchLib(imgui imgui)
 
-# setup testing
+# setup testing, docs
 include(cmake/tests.cmake)
+include(cmake/genDocs.cmake)
 
 # add chitra executable
 add_executable(chitra ${chitra_sources})
