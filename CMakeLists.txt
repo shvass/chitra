@@ -54,3 +54,4 @@ include(cmake/genDocs.cmake)
 # add chitra executable
 add_executable(chitra ${chitra_sources})
 target_link_libraries(chitra ${libraries})
+target_include_directories(chitra PRIVATE ${CMAKE_SOURCE_DIR})
