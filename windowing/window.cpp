@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "window.hpp"
+
+#include <chrono>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -22,6 +23,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include "window.hpp"
 #define glsl_version "#version 330 core"
 
 // definition of static members
@@ -80,6 +82,9 @@ window::window(windowConfig& cfg){
 
     // initialize glad
     if(!isGladInited) isGladInited = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+    // initiate renderThread
+    renderThrd = std::thread(s_runLoop, this);
 }
 
 
@@ -107,10 +112,6 @@ void window::inputHandler::processEvents(){
     glfwPollEvents();
 };
 
-void window::inputHandler::swapBuffer(){
-    glfwSwapBuffers(display->m_win);
-};
-
 
 // static window callbacks
 void window::glfwCursorPosCallback(GLFWwindow* win, double x, double y){
@@ -134,6 +135,7 @@ void window::glfwKeyCallback(GLFWwindow* win, int key, int scancode, int action,
 
 void window::glfwWindowCloseCallback(GLFWwindow* win){
     inputHandler& handler = *(inputHandler*) glfwGetWindowUserPointer(win);
+    handler.display->run = false;
     handler.close();
 };
 
@@ -150,7 +152,6 @@ void window::glfwMouseButtonCallback(GLFWwindow* win, int button, int action, in
     inputHandler& handler = *(inputHandler*) glfwGetWindowUserPointer(win);
     handler.mouseButtonUpdate(button, action);
 };
-
 
 void window::glfwDropCallback(GLFWwindow* win, int path_count, const char* paths[]){
     inputHandler& handler = *(inputHandler*) glfwGetWindowUserPointer(win);
@@ -170,3 +171,38 @@ void window::glfwScrollCallback(GLFWwindow* win, double dx, double dy){
 
     handler.scrollUpdate();
 };
+
+
+
+using namespace std::chrono;
+
+void window::runLoop(){
+
+    milliseconds lastTick =  duration_cast<milliseconds>(system_clock::now().time_since_epoch()), now;
+    std::list<layer*>::reverse_iterator pointer;
+    int  delay;
+
+    while (run)
+    {
+        // clear viewport
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // render all layers in reverse order
+        for(pointer = layers.rbegin(); pointer != layers.rend(); pointer++){
+            (*pointer)->render();
+        }
+
+        glfwSwapBuffers(m_win);
+
+        now = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+        delay = minFrameDelay - (now - lastTick).count();
+        std::this_thread::sleep_for(milliseconds(delay));
+        lastTick = now;
+    }
+};
+
+
+void window::s_runLoop(window* win){
+    win->setActive();
+    win->runLoop();
+}
