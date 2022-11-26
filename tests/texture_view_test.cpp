@@ -13,16 +13,20 @@
 
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
- 
+
+// test for texture view layer
+// video playback with imgui overlay
+
 #include <thread>
 
 #include <glad/glad.h>
 
-#include "mediaUtils/textureView.hpp"
+#include "layers/textureViewLayer.hpp"
 #include "mediaUtils/decoder.hpp"
-#include "window.hpp"
+#include "windowing/window.hpp"
+#include "layers/imguiLayer.hpp"
 
-class handler : public window::inputHandler {
+class handler : public window::inputHandler, public textureViewLayer {
 
     void updateTexture(){
         if(!dec) return;
@@ -32,22 +36,23 @@ class handler : public window::inputHandler {
         // update texture
         tex = frm;
         dec->dumpFrame(frm);
-        if(initial) { view.setTexture(tex); initial=false; }
     };
 
 public:
-    void renderloop(){
-        while (run)
+
+
+    void render() override 
+    { 
+        updateTexture();
+        draw();
+    }
+
+    void inputLoop(){
+        while (display->run)
         {
-            // 24 fps frame limiting
-            std::this_thread::sleep_for(std::chrono::milliseconds(41));
+            // 20 input polling per sec
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
             processEvents();
-
-            glClear(GL_COLOR_BUFFER_BIT);
-            updateTexture();
-            view.draw();
-
-            swapBuffer();
         }
     };
 
@@ -76,16 +81,10 @@ public:
         }
     };
     
-    void close() override { run = false; }
     void resized() override { glViewport(0, 0, width, height); }
 
 
 private:
-
-    bool run=true, initial=true;
-    textureView view;
-    texture tex;
-
     decoder* dec =0;
     loader* src=0;
 };
@@ -100,8 +99,13 @@ int main(){
     handler hand;
     win->setActive();
     win->switchHandler(&hand);
+    imguiLayer imgLyr;
 
-    hand.renderloop();
+    win->layers.push_back(&hand);
+    win->layers.push_front(&imgLyr);
+    
+
+    hand.inputLoop();
 
     return 0;
 };
