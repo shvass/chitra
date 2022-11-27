@@ -17,10 +17,7 @@
 #ifndef LOADER_HPP
 #define LOADER_HPP
 
-#include <string>
-#include <queue>
-#include <vector>
-#include <list>
+#include "pch.hpp"
 
 #include "decoder.hpp"
 #include "texture.hpp"

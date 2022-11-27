@@ -15,8 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-#include <chrono>
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <imgui.h>

@@ -25,7 +25,7 @@ OPTION(USE_SYSTEM_LIBS "use system libraries rather than building from source" O
 OPTION(BUILD_DOCS "Generate Doxygen (html) documentation" ON)
 
 
-file(GLOB chitra_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp)
+file(GLOB chitra_sources ${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp)
 # exclude tests directory from chitra source
 list(FILTER chitra_sources EXCLUDE REGEX "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 
@@ -47,11 +47,20 @@ searchLib(glfw glfw3)
 searchLib(glad glad)
 searchLib(imgui imgui)
 
+
+# setup chitra interface library
+add_library(i-chitra INTERFACE)
+target_sources(i-chitra INTERFACE ${chitra_sources})
+target_link_libraries(i-chitra INTERFACE ${libraries})
+target_include_directories(i-chitra INTERFACE ${CMAKE_SOURCE_DIR})
+target_precompile_headers(i-chitra INTERFACE pch.hpp)
+
+
 # setup testing, docs
 include(cmake/tests.cmake)
 include(cmake/genDocs.cmake)
 
+
 # add chitra executable
-add_executable(chitra ${chitra_sources})
-target_link_libraries(chitra ${libraries})
-target_include_directories(chitra PRIVATE ${CMAKE_SOURCE_DIR})
+add_executable(chitra ${chitra_sources} chitra.cpp)
+target_link_libraries(chitra i-chitra)

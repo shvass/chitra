@@ -22,19 +22,15 @@
 include(CTest)
 file(GLOB testSrcs ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp)
 
-# use chitra sources except main
-list(APPEND additionalSrcs ${chitra_sources})
-list(FILTER additionalSrcs EXCLUDE REGEX "chitra.cpp")
 
 foreach(src ${testSrcs})
-    # extract textName
+    # extract file name without extension
     cmake_path(RELATIVE_PATH src BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests OUTPUT_VARIABLE testName)
     cmake_path(REMOVE_EXTENSION testName)
 
     # test build configuration
-    add_executable(${testName} ${src} ${additionalSrcs})
-    target_link_libraries(${testName} ${libraries})
-    target_include_directories(${testName} PUBLIC ${CMAKE_SOURCE_DIR})
+    add_executable(${testName} ${src})
+    target_link_libraries(${testName} i-chitra)
     set_target_properties(${testName} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests"  #output all test binaries to tests dir
     )

@@ -14,11 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
-#include <iostream>
+#include "pch.hpp"
 #include "windowing/window.hpp"
 
-#include <thread>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 

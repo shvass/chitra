@@ -19,8 +19,7 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
-#include <list>
-#include <thread>
+#include "pch.hpp"
 
 struct GLFWwindow;
 
