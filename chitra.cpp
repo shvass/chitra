@@ -16,25 +16,25 @@
 
 
 #include <iostream>
-#include "window.hpp"
+#include "windowing/window.hpp"
 
 #include <thread>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 // log all input events to stdout
-class inputLogger : public window::inputHandler{
+class inputLogger : public window::inputHandler, public window::layer{
 
 public:
-    bool run = true;
 
-    void renderLoop(){
-        display->setActive();
-        while (run)
+    void render() override{
+        glClear(GL_COLOR_BUFFER_BIT);
+    };
+
+    void inputLoop(){
+        while (display->run)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            glClear(GL_COLOR_BUFFER_BIT);
-            swapBuffer();
             processEvents();
         }
         
@@ -67,8 +67,6 @@ public:
 
     void close() override {
         printf("window closed\n");
-        run = false;
-        delete display;
     };
 };  
 
@@ -86,6 +84,7 @@ int main(){
     };
 
     window* win = new window(cfg);
-    logger.renderLoop();
+    win->layers.push_back(&logger);
+    logger.inputLoop();
     return 0;
 };

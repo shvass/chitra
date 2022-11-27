@@ -30,12 +30,14 @@ struct texture
 
     void load();
 
+    bool isYUV() { return YUV;};
     ~texture();
 
-    unsigned int texId=0, width=0, height=0, fmt=0;
+    unsigned int texId=0, uvTexId=0, width=0, height=0, fmt=-1;
     unsigned char** data=0;
 private:
-    unsigned int currentHeight, currentWidth, currentFmt;
+    unsigned int currentHeight, currentWidth, currentFmt=-1;
+    bool YUV=false;
 };
 
 

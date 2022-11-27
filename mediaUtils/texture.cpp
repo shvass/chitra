@@ -24,6 +24,7 @@ AVFrame* texture::operator=(AVFrame* frm){
     height = frm->height;
 
     data = frm->data;
+    fmt = frm->format;
     load();
     return frm;
 };
@@ -39,16 +40,47 @@ void texture::load(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
 
-        currentFmt = fmt;
-        currentHeight = height;
-        currentWidth = width;
+        glGenTextures(1, &uvTexId);
+
+        glBindTexture(GL_TEXTURE_2D, uvTexId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        
     }
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texId);
 
-    // todo: implement more format
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data[0]);
+    currentFmt = fmt;
+    currentHeight = height;
+    currentWidth = width;
+
+    switch(currentFmt){
+
+    case AV_PIX_FMT_YUV420P:
+        YUV = true;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data[0]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, uvTexId);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, data[1]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width / 2, height / 2, 0, GL_GREEN, GL_UNSIGNED_BYTE, data[2]);
+        break;
+
+    case AV_PIX_FMT_RGB24:
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data[0]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_GREEN, GL_UNSIGNED_BYTE, data[1]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BLUE, GL_UNSIGNED_BYTE, data[2]);
+        break;
+
+    default:
+        // YUV = true;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data[0]);
+        return;
+    }
 };
 
 texture::~texture(){
