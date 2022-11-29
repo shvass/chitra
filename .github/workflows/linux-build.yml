@@ -1,0 +1,32 @@
+name: linux build
+
+on:
+  pull_request:
+    types: [opened, review_requested]
+    branches: [main]
+  push:
+    branches:
+    - 'main'
+    - 'ghub-workflow'
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout/@v3
+      with:
+        submodules: recursive
+
+    - name: install dependencies
+      run: "sudo apt install libavcodec-dev libavformat-dev libxrandr-dev libxinerama-dev libxcursor-dev 
+        libxcursor-dev libxi-dev libglu1-mesa-dev libglfw3"
+
+    - name: configure cmake
+      run: cmake -DCMAKE_BUILD_TYPE:STRING=${{env.BUILD_TYPE}} -S${{github.workspace}} -B${{github.workspace}}/build -DBUILD_DOCS:BOOL=OFF
+
+    - name: cmake build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
