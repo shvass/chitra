@@ -12,12 +12,20 @@
 <br>
 
 ## How to build ?
+Prerequisites 
+Make sure you have git, cmake and make installed on your system.
+* git
+* cmake
+* make
 
 ```
-git clone https://github.com/akbnsd/chitra && cd chitra
+git clone https://github.com/akshnova/chitra
 ```
 ```
-mkdir build && cd build
+mkdir chitra/build
+```
+```
+cd chitra/build
 ```
 ```
 cmake ..
