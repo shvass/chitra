@@ -1,4 +1,4 @@
-# ***CHITRA***
+# ***CHITRA - Video / Rendering Engine***
 
 ![linux build](https://github.com/akbnsd/chitra/actions/workflows/linux-build.yml/badge.svg)
 ![windows build](https://github.com/akbnsd/chitra/actions/workflows/windows-build.yml/badge.svg)
@@ -8,7 +8,7 @@
 
 
 
-### 2D, 3D asset viewer (should be able to open images, videos, models, etc)
+### Media Player (supports videos, audios, 3D models)(WIP)
 <br>
 
 ## How to build ?
