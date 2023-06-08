@@ -13,7 +13,6 @@
 
 ## How to build ?
 Prerequisites 
-Make sure you have git, cmake and make installed on your system.
 * git
 * cmake
 * make
