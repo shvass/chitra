@@ -1,7 +1,7 @@
 # ***CHITRA - Video / Rendering Engine***
 
 ![linux build](https://github.com/akbnsd/chitra/actions/workflows/linux-build.yml/badge.svg)
-![windows build](https://github.com/akbnsd/chitra/actions/workflows/windows-build.yml/badge.svg)
+<!-- ![windows build](https://github.com/akbnsd/chitra/actions/workflows/windows-build.yml/badge.svg) -->
 
 ![](media/preview.gif)
 
