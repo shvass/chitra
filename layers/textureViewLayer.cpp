@@ -99,7 +99,6 @@ void main()
 void compileProgram(){
     int vertexShaderId=0, fragmentShaderId=0,
     length=0, status=0;
-    char buffer[100];
 
     // compile vertex shader
     vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
@@ -110,8 +109,13 @@ void compileProgram(){
     // compilation check
     glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &status);
     if(!status){
-        glGetShaderInfoLog(vertexShaderId, 100, NULL, buffer);
-        printf("VERTEX SHADER COMPILATION_FAILED\n %s \n", buffer);
+        GLint logLength = 0;
+        glGetShaderiv(vertexShaderId, GL_INFO_LOG_LENGTH, &logLength);
+
+        std::vector<char> log(logLength);
+        glGetShaderInfoLog(vertexShaderId, logLength, nullptr, log.data());
+
+        printf("VERTEX SHADER COMPILATION_FAILED\n%s\n", log.data());
         return;
     }
 
@@ -124,8 +128,13 @@ void compileProgram(){
     // compilation check
     glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &status);
     if(!status){
-        glGetShaderInfoLog(fragmentShaderId, 100, NULL, buffer);
-        printf("FRAGMENT SHADER COMPILATION_FAILED\n %s \n", buffer);
+        GLint logLength = 0;
+        glGetShaderiv(fragmentShaderId, GL_INFO_LOG_LENGTH, &logLength);
+
+        std::vector<char> log(logLength);
+        glGetShaderInfoLog(fragmentShaderId, logLength, nullptr, log.data());
+
+        printf("FRAGEMENT SHADER COMPILATION_FAILED\n%s\n", log.data());
         return;
     }
 
@@ -143,8 +152,12 @@ void compileProgram(){
     // link check
     glGetProgramiv(programId, GL_LINK_STATUS, &status);
     if(!status) {
-        glGetProgramInfoLog(programId, 100, NULL, buffer);
-        printf("shader linking failed\n %s", buffer);
+        GLint logLength = 0;
+        glGetShaderiv(programId, GL_INFO_LOG_LENGTH, &logLength);
+
+        std::vector<char> log(logLength);
+        glGetProgramInfoLog(programId, logLength, nullptr, log.data());
+        printf("shader linking failed\n %s", log.data());
     }
 
 

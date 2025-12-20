@@ -104,7 +104,8 @@ int main(){
     win->layers.push_back(&hand);
     win->layers.push_front(&imgLyr);
     
-
+    win->setActive(false);
+    win->startRenderThread();
     hand.inputLoop();
 
     return 0;

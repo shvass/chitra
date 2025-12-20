@@ -78,7 +78,10 @@ public:
 
     // make this window as rendering context for current thread
     // must be called before parsing any external opengl draw calls
-    void setActive();
+    void setActive(bool active = true);
+
+
+    void startRenderThread();
 
     inline void setFrameLimit(int fps = 60) { minFrameDelay = 1000.0F / fps; };
 

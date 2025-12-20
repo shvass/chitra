@@ -49,6 +49,11 @@ int main(){
     win->layers.push_front(&imgLyr);
     win->layers.push_back(&lgr);
 
+    // detach current thread from rendering context
+    // start rendering thread
+    win->setActive(false);
+    win->startRenderThread();
+
     lgr.inputLoop();
     return 0;
 }

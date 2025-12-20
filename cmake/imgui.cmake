@@ -31,5 +31,4 @@ target_link_libraries(imgui PRIVATE glfw)
 set_target_properties(imgui PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/deps/imgui"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/deps/imgui"
-    BINARY_DIR "${CMAKE_BINARY_DIR}/deps/imgui"
 )

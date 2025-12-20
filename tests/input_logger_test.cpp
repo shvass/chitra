@@ -80,7 +80,12 @@ int main(int argn, const char ** argv){
 
     window* win = new window(cfg);
     imguiLayer imgLyr;
-    win->layers.push_back(&imgLyr);
+    win->layers.push_back(&imgLyr); 
+
+    // detach current thread from rendering context
+    // start rendering thread
+    win->setActive(false);
+    win->startRenderThread();
 
     logger.inputLoop();
     return 0;

@@ -80,9 +80,6 @@ window::window(windowConfig& cfg){
 
     // initialize glad
     if(!isGladInited) isGladInited = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-
-    // initiate renderThread
-    renderThrd = std::thread(s_runLoop, this);
 }
 
 
@@ -96,9 +93,16 @@ window::inputHandler* window::switchHandler(inputHandler* handler){
     return prev;
 };
 
-void window::setActive(){
-    glfwMakeContextCurrent(m_win);
+void window::setActive(bool active){
+    glfwMakeContextCurrent(active ? m_win : nullptr);
 }
+
+
+void window::startRenderThread()
+{   
+    if(!renderThrd.joinable()) 
+        renderThrd = std::thread(s_runLoop, this);
+};
 
 window::~window(){
     glfwDestroyWindow(m_win);
