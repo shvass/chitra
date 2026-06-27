@@ -18,26 +18,44 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
+#define MAX_TEX_COUNT 4
+
 struct AVFrame;
 
-// v-memory loaded image
-struct texture
+// video memory loaded image
+
+class texture
 {
-    texture(){};
+public:
+
+    enum textureFormat {
+        RGB = 0,
+        YUV420 = 1,
+        UNKNOWN
+    };
+
+    texture();
+
     texture(AVFrame* frm) { operator=(frm); };
 
     AVFrame* operator=(AVFrame* frm);
 
     void load();
 
-    bool isYUV() { return YUV;};
+    textureFormat getFormat() { return fmt;}
+    
+    inline int getTexIdAt(int index = 0) { return texIds[index];}
+
+    void bind();
+
     ~texture();
 
-    unsigned int texId=0, uvTexId=0, width=0, height=0, fmt=-1;
-    unsigned char** data=0;
 private:
-    unsigned int currentHeight, currentWidth, currentFmt=-1;
-    bool YUV=false;
+    unsigned int texIds[MAX_TEX_COUNT], p_fmt = -1;
+
+    unsigned char** data=0;
+    unsigned int height, width;
+    textureFormat fmt = textureFormat::UNKNOWN;
 };
 
 

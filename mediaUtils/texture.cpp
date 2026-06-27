@@ -18,71 +18,79 @@
 
 #include <glad/glad.h>
 #include <libavformat/avformat.h>
+#include <exception>
 
 AVFrame* texture::operator=(AVFrame* frm){
     width = frm->linesize[0];
     height = frm->height;
 
     data = frm->data;
-    fmt = frm->format;
+    p_fmt = frm->format;
     load();
     return frm;
 };
 
 
-void texture::load(){
 
-    if(!texId){
-        glGenTextures(1, &texId);
+texture::texture()
+{
+    glGenTextures(MAX_TEX_COUNT, texIds);
 
-        glBindTexture(GL_TEXTURE_2D, texId);
+    for(int i = 0; i < MAX_TEX_COUNT; i++)
+    {
+        glBindTexture(GL_TEXTURE_2D, texIds[i]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-
-        glGenTextures(1, &uvTexId);
-
-        glBindTexture(GL_TEXTURE_2D, uvTexId);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
     }
+};
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texId);
+void texture::load(){
+    switch(p_fmt){
 
-    currentFmt = fmt;
-    currentHeight = height;
-    currentWidth = width;
+    case AV_PIX_FMT_GBR24P:
+        fmt = textureFormat::RGB;
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texIds[0]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data[2]);
 
-    switch(currentFmt){
+        glBindTexture(GL_TEXTURE_2D, texIds[1]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_GREEN, GL_UNSIGNED_BYTE, data[0]);
 
-    case AV_PIX_FMT_YUV420P:
-        YUV = true;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data[0]);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, uvTexId);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, data[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width / 2, height / 2, 0, GL_GREEN, GL_UNSIGNED_BYTE, data[2]);
+        glBindTexture(GL_TEXTURE_2D, texIds[2]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BLUE, GL_UNSIGNED_BYTE, data[1]);
         break;
 
     case AV_PIX_FMT_RGB24:
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data[0]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_GREEN, GL_UNSIGNED_BYTE, data[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BLUE, GL_UNSIGNED_BYTE, data[2]);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texIds[0]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[0]);
+
+        glBindTexture(GL_TEXTURE_2D, texIds[1]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[0]);
+
+        glBindTexture(GL_TEXTURE_2D, texIds[2]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[0]);
         break;
 
     default:
-        // YUV = true;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data[0]);
+        fmt = textureFormat::UNKNOWN;
+        throw std::runtime_error("unsupported pixel format ");
+        // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data[0]);
         return;
     }
 };
 
+void texture::bind()
+{
+    for(int i = 0; i < MAX_TEX_COUNT; i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, texIds[i]);
+    }
+};
+
 texture::~texture(){
-    glDeleteTextures(1, &texId);
+    glDeleteTextures(MAX_TEX_COUNT, texIds);
 };

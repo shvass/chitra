@@ -21,6 +21,8 @@
 
 #include "textureViewLayer.hpp"
 
+#define SHADER_TEX_IDENTIFIER "tex"
+
 unsigned int programId=0, arrayId=0, yuvId=0;
 
 float vertices[] = {
@@ -36,20 +38,6 @@ unsigned int indices[] = {
     1, 2, 3
 };
 
-// later- add colored rendering
-// float yuvToRgb[] = {
-//     0.2126f, -0.09991f, 0.615f,
-//     0.7152f, -0.33609f, -0.55861f,
-//     0.0722f,  0.436f, -0.05639f 
-// };
-
-
-// float yuvToRgb[] = {
-//     1.0f, 0.0f, 1.13983f,
-//     1.0f, -0.39465f, -0.58060f,
-//     1.0f,  2.03211f, 0.0f 
-// };
-
 
 const char* vertexSrc = R"(
 #version 330 core
@@ -63,34 +51,23 @@ void main()
 }
 )";
 
-const char* fragmentSrc=R"(
+const char* RgbFragmentSrc=R"(
 #version 330 core
 in vec2 voTexCords;
 out vec4 color;
 
-uniform sampler2D tex;
-uniform sampler2D uvTex;
-uniform bool isyuv=false;
-uniform mat3 yuvToRgb;
+uniform sampler2D tex0;
+uniform sampler2D tex1;
+uniform sampler2D tex2;
+uniform sampler2D tex3;
+
 
 void main()
 {
-    color = texture(tex, voTexCords);
-    if(isyuv){
-        color.yz = texture(uvTex, voTexCords).xy;
-        // color.xyz = yuvToRgb * color.xyz;
-
-        float R, G, B, Y, U, V;
-        Y = color.x;
-        U = color.y;
-        V = color.z;
-
-        R = Y + 1.140 * V;
-        G = Y - 0.395 * U - 0.581 * V;
-        B = Y + 2.032 * U;
-
-        color.xyz = vec3(R, G, B);
-    };
+    color = vec4(texture(tex0, voTexCords).x,
+                 texture(tex1, voTexCords).y,
+                 texture(tex2, voTexCords).z,
+                 1.0);
 }
 )";
 
@@ -121,8 +98,8 @@ void compileProgram(){
 
     // compile fragment shader
     fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    length = strlen(fragmentSrc);
-    glShaderSource(fragmentShaderId, 1, &fragmentSrc, &length);
+    length = strlen(RgbFragmentSrc);
+    glShaderSource(fragmentShaderId, 1, &RgbFragmentSrc, &length);
     glCompileShader(fragmentShaderId);
 
     // compilation check
@@ -160,17 +137,15 @@ void compileProgram(){
         printf("shader linking failed\n %s", log.data());
     }
 
-
-    // later -add colored rendering
-    // glUseProgram(programId);
-    // yuvId = glGetUniformLocation(programId, "isyuv");
-    // glUniformMatrix3fv(glGetUniformLocation(programId, "yuvToRgb"), 1, GL_TRUE, yuvToRgb);
-
-
-    // later -add colored rendering
-    // // bind uv texture to slot 1
-    // glUniform1i(glGetUniformLocation(programId, "uvTex"), 1);
-
+    glUseProgram(programId);
+    
+    // bind texture units with shader uniform identifiers
+    for(int i = 0; i < MAX_TEX_COUNT; i++)
+    {   
+        std::string identifier = std::string(SHADER_TEX_IDENTIFIER) + char{'0' + i};
+        unsigned int texAdd = glGetUniformLocation(programId, identifier.c_str());
+        glUniform1i(texAdd, i);
+    }
 };
 
 
@@ -201,20 +176,10 @@ textureViewLayer::textureViewLayer(){
     if(!arrayId) loadArray();
 };
 
-
 void textureViewLayer::draw(){
     glUseProgram(programId);
     glBindVertexArray(arrayId);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, tex.texId);
+    tex.bind();
 
-    // later- add colored rendering
-    // if(tex.isYUV()){
-    //     glUniform1i(yuvId, tex.isYUV());
-
-    //     glActiveTexture(GL_TEXTURE1);
-    //     glBindTexture(GL_TEXTURE_2D, tex.uvTexId);
-    // }
-
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 };
